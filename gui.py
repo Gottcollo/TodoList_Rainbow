@@ -1,8 +1,8 @@
-## gui.py herstellen
 import tkinter as tk
 from tkinter import messagebox
 import tasks
-import storage 
+import storage
+import theme  # importiertes Theme-Modul
 
 def create_gui():
     root = tk.Tk()
@@ -17,15 +17,15 @@ def create_gui():
     listbox_tasks = tk.Listbox(root, width=50, height=15)
     listbox_tasks.pack(pady=10)
 
-    ## Aufgaben aus JSON laden
-    for task in tasks.get_tasks():
-        listbox_tasks.insert(tk.END, task)
+    ## Vorhandene Aufgaben aus JSON laden
+    for task_item in tasks.get_tasks():
+        listbox_tasks.insert(tk.END, task_item)
 
     ## Funktionen für Buttons
     def add_task_gui():
-        task = entry_task.get()
-        if tasks.add_task(task):
-            listbox_tasks.insert(tk.END, task)
+        task_item = entry_task.get()
+        if tasks.add_task(task_item):
+            listbox_tasks.insert(tk.END, task_item)
             entry_task.delete(0, tk.END)
         else:
             messagebox.showwarning("FAIL", "Irgendwas muss man eingeben!")
@@ -38,10 +38,19 @@ def create_gui():
         except IndexError:
             messagebox.showwarning("Fail", "Wähl was aus!")
 
-    ## Funktion beim Schließen
     def on_close():
         storage.save_tasks(tasks.get_tasks())
         root.destroy()
+
+    ## Theme wechseln
+    def switch_theme_gui():
+        current = theme.next_theme()
+        root.configure(bg=current["bg"])
+        listbox_tasks.configure(bg=current["bg"], fg=current["fg"])
+        entry_task.configure(bg=current["entry_bg"], fg=current["entry_fg"])
+        button_add.configure(bg=current["button_bg"], fg=current["button_fg"])
+        button_delete.configure(bg=current["button_bg"], fg=current["button_fg"])
+        button_theme.configure(bg=current["button_bg"], fg=current["button_fg"])
 
     ## Buttons hinzufügen
     button_add = tk.Button(root, text="Hinzufügen", width=15, command=add_task_gui)
@@ -49,6 +58,12 @@ def create_gui():
 
     button_delete = tk.Button(root, text="Löschen", width=15, command=delete_task_gui)
     button_delete.pack(pady=5)
+
+    button_theme = tk.Button(root, text="Theme wechseln", width=20, command=switch_theme_gui)
+    button_theme.pack(pady=10)
+
+    # Initiales Theme setzen
+    switch_theme_gui()
 
     root.protocol("WM_DELETE_WINDOW", on_close)
     root.mainloop()
