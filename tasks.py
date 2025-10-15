@@ -1,4 +1,7 @@
-tasks_list = []
+import storage
+
+# beim Start laden
+tasks_list = storage.load_tasks()
 
 def add_task(task):
     if task and task.strip() != "":
