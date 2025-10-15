@@ -1,5 +1,6 @@
 import tkinter as tk
 from tkinter import messagebox
+from tkcalendar import DateEntry  # Datumsauswahl
 import tasks
 import storage
 import theme  # importiertes Theme-Modul
@@ -13,21 +14,27 @@ def create_gui():
     entry_task = tk.Entry(root, width=40)
     entry_task.pack(pady=10)
 
-    ## Liste selbst 
+    ## Datumsauswahl für Aufgabe
+    entry_date = DateEntry(root, width=12)
+    entry_date.pack(pady=5)
+
+    ## Liste selbst
     listbox_tasks = tk.Listbox(root, width=50, height=15)
     listbox_tasks.pack(pady=10)
 
     ## Vorhandene Aufgaben aus JSON laden
-    for task_item in tasks.get_tasks():
-        listbox_tasks.insert(tk.END, task_item)
+    for task_item, task_date in tasks.get_tasks():
+        display_text = f"{task_item} | {task_date}"
+        listbox_tasks.insert(tk.END, display_text)
 
     ## Funktionen für Buttons
     def add_task_gui():
         task_item = entry_task.get()
-        if tasks.add_task(task_item):
-            listbox_tasks.insert(tk.END, task_item)
+        due_date = entry_date.get_date()  # datetime.date Objekt
+        if tasks.add_task(task_item, due_date):
+            listbox_tasks.insert(tk.END, f"{task_item} | {due_date}")
             entry_task.delete(0, tk.END)
-            apply_theme(theme.get_current_theme())  # Farbe sofort anwenden
+            apply_theme(theme.get_current_theme())
         else:
             messagebox.showwarning("FAIL", "Irgendwas muss man eingeben!")
 
@@ -62,6 +69,7 @@ def create_gui():
         root.configure(bg=current["bg"])
         listbox_tasks.configure(bg=current["bg"], fg=current["fg"])
         entry_task.configure(bg=current["entry_bg"], fg=current["entry_fg"])
+        entry_date.configure(background=current["entry_bg"], foreground=current["entry_fg"])
         button_add.configure(bg=current["button_bg"], fg=current["button_fg"])
         button_delete.configure(bg=current["button_bg"], fg=current["button_fg"])
         button_theme.configure(bg=current["button_bg"], fg=current["button_fg"])

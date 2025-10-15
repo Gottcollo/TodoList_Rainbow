@@ -1,11 +1,11 @@
 import storage
 
 # beim Start laden
-tasks_list = storage.load_tasks()
+tasks_list = storage.load_tasks()  # jetzt Liste von (task, date)
 
-def add_task(task):
+def add_task(task, date=None):
     if task and task.strip() != "":
-        tasks_list.append(task)
+        tasks_list.append((task, date))  # Tuple: Aufgabe + Datum
         return True
     return False
 

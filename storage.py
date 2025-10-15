@@ -6,8 +6,10 @@ FILENAME = "tasks.json"
 def save_tasks(tasks_list):
     """Speichert die Aufgabenliste als JSON-Datei."""
     try:
+        # Jede Aufgabe als Dict speichern: {"task": "...", "date": "..."}
+        data_to_save = [{"task": t[0], "date": str(t[1])} for t in tasks_list]
         with open(FILENAME, "w", encoding="utf-8") as f:
-            json.dump(tasks_list, f, ensure_ascii=False, indent=4)
+            json.dump(data_to_save, f, ensure_ascii=False, indent=4)
         return True
     except Exception as e:
         print("Fehler beim Speichern:", e)
@@ -20,13 +22,10 @@ def load_tasks():
         return []
     try:
         with open(FILENAME, "r", encoding="utf-8") as f:
-            tasks_list = json.load(f)
-        # Sicherheitscheck – falls Datei leer oder kaputt
-        if isinstance(tasks_list, list):
-            return tasks_list
-        else:
-            print("Warnung: Ungültiges Format in tasks.json, leere Liste wird verwendet.")
-            return []
+            data_loaded = json.load(f)
+        # In Tuple (task, date) umwandeln
+        tasks_list = [(item["task"], item.get("date")) for item in data_loaded]
+        return tasks_list
     except Exception as e:
         print("Fehler beim Laden:", e)
         return []
