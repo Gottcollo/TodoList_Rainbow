@@ -1,7 +1,8 @@
-## gui herstellen
+## gui.py herstellen
 import tkinter as tk
 from tkinter import messagebox
 import tasks
+import storage 
 
 def create_gui():
     root = tk.Tk()
@@ -15,6 +16,10 @@ def create_gui():
     ## Liste selbst 
     listbox_tasks = tk.Listbox(root, width=50, height=15)
     listbox_tasks.pack(pady=10)
+
+    ## Aufgaben aus JSON laden
+    for task in tasks.get_tasks():
+        listbox_tasks.insert(tk.END, task)
 
     ## Funktionen für Buttons
     def add_task_gui():
@@ -33,11 +38,17 @@ def create_gui():
         except IndexError:
             messagebox.showwarning("Fail", "Wähl was aus!")
 
-    ##Button hinzufügen
+    ## Funktion beim Schließen
+    def on_close():
+        storage.save_tasks(tasks.get_tasks())
+        root.destroy()
+
+    ## Buttons hinzufügen
     button_add = tk.Button(root, text="Hinzufügen", width=15, command=add_task_gui)
     button_add.pack(pady=5)
 
     button_delete = tk.Button(root, text="Löschen", width=15, command=delete_task_gui)
     button_delete.pack(pady=5)
 
+    root.protocol("WM_DELETE_WINDOW", on_close)
     root.mainloop()
