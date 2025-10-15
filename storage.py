@@ -1,20 +1,22 @@
 import json
 import os
+from datetime import datetime
 
 FILENAME = "tasks.json"
 
 def save_tasks(tasks_list):
     """Speichert die Aufgabenliste als JSON-Datei."""
     try:
-        # Jede Aufgabe als Dict speichern: {"task": "...", "date": "..."}
-        data_to_save = [{"task": t[0], "date": str(t[1])} for t in tasks_list]
+        # Konvertiere das Datum in ISO-Format (YYYY-MM-DD)
+        serializable_list = [
+            {"task": t, "date": d.isoformat() if d else None} for t, d in tasks_list
+        ]
         with open(FILENAME, "w", encoding="utf-8") as f:
-            json.dump(data_to_save, f, ensure_ascii=False, indent=4)
+            json.dump(serializable_list, f, ensure_ascii=False, indent=4)
         return True
     except Exception as e:
         print("Fehler beim Speichern:", e)
         return False
-
 
 def load_tasks():
     """Lädt Aufgaben aus der JSON-Datei, falls vorhanden."""
@@ -22,9 +24,13 @@ def load_tasks():
         return []
     try:
         with open(FILENAME, "r", encoding="utf-8") as f:
-            data_loaded = json.load(f)
-        # In Tuple (task, date) umwandeln
-        tasks_list = [(item["task"], item.get("date")) for item in data_loaded]
+            loaded = json.load(f)
+        tasks_list = []
+        for item in loaded:
+            task = item.get("task")
+            date_str = item.get("date")
+            date_obj = datetime.fromisoformat(date_str).date() if date_str else None
+            tasks_list.append((task, date_obj))
         return tasks_list
     except Exception as e:
         print("Fehler beim Laden:", e)

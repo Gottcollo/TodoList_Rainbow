@@ -3,7 +3,7 @@ from tkinter import messagebox
 from tkcalendar import DateEntry  # Datumsauswahl
 import tasks
 import storage
-import theme  # importiertes Theme-Modul
+import theme  
 
 def create_gui():
     root = tk.Tk()
@@ -22,7 +22,7 @@ def create_gui():
     listbox_tasks = tk.Listbox(root, width=50, height=15)
     listbox_tasks.pack(pady=10)
 
-    ## Vorhandene Aufgaben aus JSON laden
+    ## Aufgaben aus JSON laden
     for task_item, task_date in tasks.get_tasks():
         display_text = f"{task_item} | {task_date}"
         listbox_tasks.insert(tk.END, display_text)
