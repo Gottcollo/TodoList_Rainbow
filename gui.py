@@ -27,6 +27,7 @@ def create_gui():
         if tasks.add_task(task_item):
             listbox_tasks.insert(tk.END, task_item)
             entry_task.delete(0, tk.END)
+            apply_theme(theme.get_current_theme())  # Farbe sofort anwenden
         else:
             messagebox.showwarning("FAIL", "Irgendwas muss man eingeben!")
 
@@ -55,9 +56,9 @@ def create_gui():
     button_theme = tk.Button(root, text="Theme wechseln", width=20)
     button_theme.pack(pady=10)
 
-    ## Theme-Funktionen (jetzt existieren alle Buttons)
-    def switch_theme_gui():
-        current = theme.next_theme()
+    ## Funktion, die alle Widgets und Listbox-Einträge färbt
+    def apply_theme(current):
+        # Fenster & Widgets färben
         root.configure(bg=current["bg"])
         listbox_tasks.configure(bg=current["bg"], fg=current["fg"])
         entry_task.configure(bg=current["entry_bg"], fg=current["entry_fg"])
@@ -66,22 +67,26 @@ def create_gui():
         button_theme.configure(bg=current["button_bg"], fg=current["button_fg"])
         button_theme_back.configure(bg=current["button_bg"], fg=current["button_fg"])
 
+        # Listbox-Einträge einfärben
+        colors = current.get("task_colors", [current["fg"]])
+        for i in range(listbox_tasks.size()):
+            listbox_tasks.itemconfig(i, fg=colors[i % len(colors)])
+
+    ## Theme-Funktionen
+    def switch_theme_gui():
+        current = theme.next_theme()
+        apply_theme(current)
+
     def switch_theme_back_gui():
         current = theme.prev_theme()
-        root.configure(bg=current["bg"])
-        listbox_tasks.configure(bg=current["bg"], fg=current["fg"])
-        entry_task.configure(bg=current["entry_bg"], fg=current["entry_fg"])
-        button_add.configure(bg=current["button_bg"], fg=current["button_fg"])
-        button_delete.configure(bg=current["button_bg"], fg=current["button_fg"])
-        button_theme.configure(bg=current["button_bg"], fg=current["button_fg"])
-        button_theme_back.configure(bg=current["button_bg"], fg=current["button_fg"])
+        apply_theme(current)
 
     # Buttons mit Theme-Funktionen verbinden
     button_theme.configure(command=switch_theme_gui)
     button_theme_back.configure(command=switch_theme_back_gui)
 
     # Initiales Theme setzen
-    switch_theme_gui()
+    apply_theme(theme.get_current_theme())
 
     root.protocol("WM_DELETE_WINDOW", on_close)
     root.mainloop()
