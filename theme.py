@@ -20,3 +20,8 @@ def next_theme():
     """Wechselt zum nächsten Theme und gibt es zurück"""
     current_theme["index"] = (current_theme["index"] + 1) % len(themes)
     return get_current_theme()
+
+def prev_theme():
+    """Wechselt zum vorherigen Theme und gibt es zurück"""
+    current_theme["index"] = (current_theme["index"] - 1) % len(themes)
+    return get_current_theme()
