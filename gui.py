@@ -1,38 +1,52 @@
 import tkinter as tk
-from tkinter import messagebox
-from tkcalendar import DateEntry  # Datumsauswahl
+from tkinter import messagebox, ttk
+from tkcalendar import DateEntry
 import tasks
 import storage
-import theme  
+import theme
 
 def create_gui():
     root = tk.Tk()
     root.title("Rainbow-Liste")
-    root.geometry("600x600")
+    root.geometry("600x650")
 
     ## Eingabe für neue Aufgabe
     entry_task = tk.Entry(root, width=40)
     entry_task.pack(pady=10)
 
-    ## Datumsauswahl für Aufgabe
+    ## Datumsauswahl
     entry_date = DateEntry(root, width=12)
     entry_date.pack(pady=5)
+
+    ## Priorität Dropdown
+    priority_var = tk.StringVar(value="Low")
+    priority_combo = ttk.Combobox(
+        root, textvariable=priority_var,
+        values=["Low", "Medium", "High"],
+        state="readonly", width=10
+    )
+    priority_combo.pack(pady=5)
 
     ## Liste selbst
     listbox_tasks = tk.Listbox(root, width=50, height=15)
     listbox_tasks.pack(pady=10)
 
-    ## Aufgaben aus JSON laden
-    for task_item, task_date in tasks.get_tasks():
-        display_text = f"{task_item} | {task_date}"
+    ## Farbmap für Priorität
+    priority_colors = {"Low": "green", "Medium": "orange", "High": "red"}
+
+    ## Aufgaben laden
+    for task_item, task_date, task_priority in tasks.get_tasks():
+        display_text = f"{task_item} | {task_date} | {task_priority}"
         listbox_tasks.insert(tk.END, display_text)
 
-    ## Funktionen für Buttons
+    ## Buttons Funktionen
     def add_task_gui():
         task_item = entry_task.get()
-        due_date = entry_date.get_date()  # datetime.date Objekt
-        if tasks.add_task(task_item, due_date):
-            listbox_tasks.insert(tk.END, f"{task_item} | {due_date}")
+        due_date = entry_date.get_date()
+        priority = priority_var.get()
+        if tasks.add_task(task_item, due_date, priority):
+            display_text = f"{task_item} | {due_date} | {priority}"
+            listbox_tasks.insert(tk.END, display_text)
             entry_task.delete(0, tk.END)
             apply_theme(theme.get_current_theme())
         else:
@@ -50,7 +64,7 @@ def create_gui():
         storage.save_tasks(tasks.get_tasks())
         root.destroy()
 
-    ## Buttons hinzufügen
+    ## Buttons
     button_add = tk.Button(root, text="Hinzufügen", width=15, command=add_task_gui)
     button_add.pack(pady=5)
 
@@ -63,37 +77,35 @@ def create_gui():
     button_theme = tk.Button(root, text="Theme wechseln", width=20)
     button_theme.pack(pady=10)
 
-    ## Funktion, die alle Widgets und Listbox-Einträge färbt
+    ## Theme + Prioritätsfarben
     def apply_theme(current):
         # Fenster & Widgets färben
         root.configure(bg=current["bg"])
         listbox_tasks.configure(bg=current["bg"], fg=current["fg"])
         entry_task.configure(bg=current["entry_bg"], fg=current["entry_fg"])
         entry_date.configure(background=current["entry_bg"], foreground=current["entry_fg"])
+        priority_combo.configure(background=current["entry_bg"], foreground=current["entry_fg"])
         button_add.configure(bg=current["button_bg"], fg=current["button_fg"])
         button_delete.configure(bg=current["button_bg"], fg=current["button_fg"])
         button_theme.configure(bg=current["button_bg"], fg=current["button_fg"])
         button_theme_back.configure(bg=current["button_bg"], fg=current["button_fg"])
 
-        # Listbox-Einträge kontrastreich einfärben
-        contrast_color = theme.get_contrast_color(current["bg"])
-        for i in range(listbox_tasks.size()):
-            listbox_tasks.itemconfig(i, fg=contrast_color)
+        # Listbox-Einträge nach Priorität färben
+        for i, task in enumerate(tasks.get_tasks()):
+            _, _, task_priority = task
+            color = priority_colors.get(task_priority, current["fg"])
+            listbox_tasks.itemconfig(i, fg=color)
 
-    ## Theme-Funktionen
+    ## Theme Funktionen
     def switch_theme_gui():
-        current = theme.next_theme()
-        apply_theme(current)
+        apply_theme(theme.next_theme())
 
     def switch_theme_back_gui():
-        current = theme.prev_theme()
-        apply_theme(current)
+        apply_theme(theme.prev_theme())
 
-    # Buttons mit Theme-Funktionen verbinden
     button_theme.configure(command=switch_theme_gui)
     button_theme_back.configure(command=switch_theme_back_gui)
 
-    # Initiales Theme setzen
     apply_theme(theme.get_current_theme())
 
     root.protocol("WM_DELETE_WINDOW", on_close)

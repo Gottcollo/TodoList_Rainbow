@@ -1,11 +1,16 @@
 import storage
 
 # beim Start laden
-tasks_list = storage.load_tasks()  # jetzt Liste von (task, date)
+tasks_list = storage.load_tasks()  # Liste von (task, date[, priority])
 
-def add_task(task, date=None):
+# Alte Tasks upgraden
+for i, t in enumerate(tasks_list):
+    if len(t) == 2:
+        tasks_list[i] = (t[0], t[1], "low")  # Standard-Priorität "low"
+
+def add_task(task, date=None, priority="low"):
     if task and task.strip() != "":
-        tasks_list.append((task, date))  # Tuple: Aufgabe + Datum
+        tasks_list.append((task, date, priority))
         return True
     return False
 
