@@ -1,10 +1,17 @@
 [
     {
-        "task": "kacke",
-        "date": "2025-10-14"
+        "task": "do it please",
+        "date": "2025-10-15",
+        "priority": "Low"
     },
     {
-        "task": "teilen beenden",
-        "date": "2025-10-29"
+        "task": "da martin farbe",
+        "date": "2025-10-15",
+        "priority": "Medium"
+    },
+    {
+        "task": "HIER HAST DU DEINE FARBE",
+        "date": "2025-10-15",
+        "priority": "High"
     }
 ]
