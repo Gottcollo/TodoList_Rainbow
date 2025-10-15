@@ -67,10 +67,10 @@ def create_gui():
         button_theme.configure(bg=current["button_bg"], fg=current["button_fg"])
         button_theme_back.configure(bg=current["button_bg"], fg=current["button_fg"])
 
-        # Listbox-Einträge einfärben
-        colors = current.get("task_colors", [current["fg"]])
+        # Listbox-Einträge kontrastreich einfärben
+        contrast_color = theme.get_contrast_color(current["bg"])
         for i in range(listbox_tasks.size()):
-            listbox_tasks.itemconfig(i, fg=colors[i % len(colors)])
+            listbox_tasks.itemconfig(i, fg=contrast_color)
 
     ## Theme-Funktionen
     def switch_theme_gui():

@@ -1,4 +1,3 @@
-# theme.py
 themes = [
     {
         "name": "Standard",
@@ -7,8 +6,7 @@ themes = [
         "button_bg": "lightgrey",
         "button_fg": "black",
         "entry_bg": "white",
-        "entry_fg": "black",
-        "task_colors": ["black"]  # alle Aufgaben schwarz
+        "entry_fg": "black"
     },
     {
         "name": "Dunkel",
@@ -17,39 +15,9 @@ themes = [
         "button_bg": "#555555",
         "button_fg": "white",
         "entry_bg": "#3C3C3C",
-        "entry_fg": "white",
-        "task_colors": ["#FFD700", "#ADFF2F", "#00FFFF", "#FF69B4", "#FFA500"]
+        "entry_fg": "white"
     },
-    {
-        "name": "Pastell",
-        "bg": "#FFF0F5",
-        "fg": "#333333",
-        "button_bg": "#FFD1DC",
-        "button_fg": "#333333",
-        "entry_bg": "#FFE4E1",
-        "entry_fg": "#333333",
-        "task_colors": ["#FFB6C1", "#E6E6FA", "#F0E68C", "#98FB98", "#AFEEEE"]
-    },
-    {
-        "name": "Blau",
-        "bg": "#E6F0FA",
-        "fg": "#002F6C",
-        "button_bg": "#A9CCE3",
-        "button_fg": "#002F6C",
-        "entry_bg": "#D6EAF8",
-        "entry_fg": "#002F6C",
-        "task_colors": ["#003366", "#336699", "#6699CC", "#99CCFF", "#CCE5FF"]
-    },
-    {
-        "name": "Grün",
-        "bg": "#E8F5E9",
-        "fg": "#1B5E20",
-        "button_bg": "#A5D6A7",
-        "button_fg": "#1B5E20",
-        "entry_bg": "#C8E6C9",
-        "entry_fg": "#1B5E20",
-        "task_colors": ["#1B5E20", "#2E7D32", "#4CAF50", "#66BB6A", "#81C784"]
-    },
+    # weitere Themes 
 ]
 
 current_theme = {"index": 0}
@@ -64,3 +32,18 @@ def next_theme():
 def prev_theme():
     current_theme["index"] = (current_theme["index"] - 1) % len(themes)
     return get_current_theme()
+
+
+# Neue Hilfsfunktion für Kontrast
+
+def get_contrast_color(bg_color):
+    """
+    bg_color als Hex-String, gibt 'black' oder 'white' zurück
+    abhängig von Helligkeit des Hintergrunds
+    """
+    bg_color = bg_color.lstrip('#')
+    r = int(bg_color[0:2], 16)
+    g = int(bg_color[2:4], 16)
+    b = int(bg_color[4:6], 16)
+    brightness = (r*299 + g*587 + b*114) / 1000
+    return "black" if brightness > 128 else "white"
