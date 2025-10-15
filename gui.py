@@ -1,3 +1,9 @@
+import tkinter as tk
+from tkinter import messagebox
+import tasks
+import storage
+import theme  # importiertes Theme-Modul
+
 def create_gui():
     root = tk.Tk()
     root.title("Rainbow-Liste")
@@ -36,7 +42,20 @@ def create_gui():
         storage.save_tasks(tasks.get_tasks())
         root.destroy()
 
-    ## Theme wechseln
+    ## Buttons hinzufügen
+    button_add = tk.Button(root, text="Hinzufügen", width=15, command=add_task_gui)
+    button_add.pack(pady=5)
+
+    button_delete = tk.Button(root, text="Löschen", width=15, command=delete_task_gui)
+    button_delete.pack(pady=5)
+
+    button_theme_back = tk.Button(root, text="Theme zurück", width=20)
+    button_theme_back.pack(pady=5)
+
+    button_theme = tk.Button(root, text="Theme wechseln", width=20)
+    button_theme.pack(pady=10)
+
+    ## Theme-Funktionen (jetzt existieren alle Buttons)
     def switch_theme_gui():
         current = theme.next_theme()
         root.configure(bg=current["bg"])
@@ -57,18 +76,9 @@ def create_gui():
         button_theme.configure(bg=current["button_bg"], fg=current["button_fg"])
         button_theme_back.configure(bg=current["button_bg"], fg=current["button_fg"])
 
-    ## Buttons hinzufügen
-    button_add = tk.Button(root, text="Hinzufügen", width=15, command=add_task_gui)
-    button_add.pack(pady=5)
-
-    button_delete = tk.Button(root, text="Löschen", width=15, command=delete_task_gui)
-    button_delete.pack(pady=5)
-
-    button_theme_back = tk.Button(root, text="Theme zurück", width=20, command=switch_theme_back_gui)
-    button_theme_back.pack(pady=5)
-
-    button_theme = tk.Button(root, text="Theme wechseln", width=20, command=switch_theme_gui)
-    button_theme.pack(pady=10)
+    # Buttons mit Theme-Funktionen verbinden
+    button_theme.configure(command=switch_theme_gui)
+    button_theme_back.configure(command=switch_theme_back_gui)
 
     # Initiales Theme setzen
     switch_theme_gui()
