@@ -1,29 +1,32 @@
+import json
 import os
 
-FILENAME = "tasks.txt"
+FILENAME = "tasks.json"
 
 def save_tasks(tasks_list):
-    """Schreibt alle Aufgaben in die Datei (eine Aufgabe pro Zeile)."""
+    """Speichert die Aufgabenliste als JSON-Datei."""
     try:
         with open(FILENAME, "w", encoding="utf-8") as f:
-            for task in tasks_list:
-                # optional: prüfen, dass keine Zeilenumbrüche in Aufgaben sind
-                f.write(task + "\n")
+            json.dump(tasks_list, f, ensure_ascii=False, indent=4)
         return True
     except Exception as e:
         print("Fehler beim Speichern:", e)
         return False
 
+
 def load_tasks():
-    """Liest Aufgaben aus der Datei und gibt eine Liste zurück."""
+    """Lädt Aufgaben aus der JSON-Datei, falls vorhanden."""
     if not os.path.exists(FILENAME):
         return []
     try:
         with open(FILENAME, "r", encoding="utf-8") as f:
-            lines = f.readlines()
-        # Entferne Zeilenumbrüche
-        tasks = [line.strip() for line in lines if line.strip() != ""]
-        return tasks
+            tasks_list = json.load(f)
+        # Sicherheitscheck – falls Datei leer oder kaputt
+        if isinstance(tasks_list, list):
+            return tasks_list
+        else:
+            print("Warnung: Ungültiges Format in tasks.json, leere Liste wird verwendet.")
+            return []
     except Exception as e:
         print("Fehler beim Laden:", e)
         return []
